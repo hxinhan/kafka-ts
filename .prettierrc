@@ -1,0 +1,7 @@
+singleQuote: true
+trailingComma: es6
+semi: false
+tabWidth: 4
+arrowParens: always
+printWidth: 120
+
