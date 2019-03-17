@@ -1,0 +1,26 @@
+export const REQUEST_TYPE = {
+    produce: 0,
+    fetch: 1,
+    offset: 2,
+    metadata: 3,
+    leader: 4,
+    stopReplica: 5,
+    updateMetadata: 6,
+    controlledShutdown: 7,
+    offsetCommit: 8,
+    offsetFetch: 9,
+    groupCoordinator: 10,
+    joinGroup: 11,
+    heartbeat: 12,
+    leaveGroup: 13,
+    syncGroup: 14,
+    describeGroups: 15,
+    listGroups: 16,
+    saslHandshake: 17,
+    apiVersions: 18,
+    createTopics: 19,
+    deleteTopics: 20,
+    describeConfigs: 32,
+    saslAuthenticate: 36
+}
+export const API_VERSION = 0
