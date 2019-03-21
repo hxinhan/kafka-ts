@@ -7,6 +7,11 @@ export class Encoder {
         this.smartBuffer = new SmartBuffer()
     }
 
+    writeInt8(value: number) {
+        this.smartBuffer.writeInt8(value)
+        return this
+    }
+
     writeInt16(value: number) {
         this.smartBuffer.writeInt16BE(value)
         return this
@@ -19,6 +24,21 @@ export class Encoder {
 
     writeString(value: string) {
         this.smartBuffer.writeString(value)
+        return this
+    }
+
+    writeArray<T>(items: T[], writer: (item: T) => {}) {
+        this.writeInt32(items.length)
+        items.forEach((item: T) => writer(item))
+        return this
+    }
+
+    writeBoolean(value: boolean) {
+        if (value) {
+            this.writeInt8(1)
+        } else {
+            this.writeInt8(0)
+        }
         return this
     }
 
