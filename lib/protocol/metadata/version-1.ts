@@ -1,7 +1,6 @@
-import { APIResponseBase } from '../api'
-import { BrokerMetadataBase, TopicMetadataBase, MetadataV0, PartitionMetadata } from './version-0'
+import { BrokerMetadataBase, TopicMetadataBase, MetadataV0, PartitionMetadata, MetadataResponseBase } from './version-0'
 
-export interface MetadataResponseV1 extends APIResponseBase {
+export interface MetadataResponseV1 extends MetadataResponseBase {
     controllerId: number
     brokers: BrokerMetadataV1[]
     topics: TopicMetadataV1[]
@@ -29,7 +28,7 @@ export class MetadataV1 extends MetadataV0 {
      * @memberof MetadataV1
      */
     decode(response: Buffer): MetadataResponseV1 {
-        const baseResponse = this.decodeResponse(response)
+        this.decoder.fromBuffer(response)
         const brokersReader = () => (
             {
                 nodeId: this.decoder.readInt32(),
@@ -55,7 +54,6 @@ export class MetadataV1 extends MetadataV0 {
         })
 
         return {
-            ...baseResponse,
             brokers: this.decoder.readArray<BrokerMetadataV1>(brokersReader),
             controllerId: this.decoder.readInt32(),
             topics: this.decoder.readArray<TopicMetadataV1>(topicsReader).filter((p) => !p.errorCode)

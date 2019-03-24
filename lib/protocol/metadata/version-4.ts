@@ -35,7 +35,7 @@ export class MetadataV4 extends MetadataV0 {
      * @memberof MetadataV4
      */
     decode(response: Buffer): MetadataResponseV4 {
-        const baseResponse = this.decodeResponse(response)
+        this.decoder.fromBuffer(response)
         const brokersReader = () => (
             {
                 nodeId: this.decoder.readInt32(),
@@ -61,7 +61,6 @@ export class MetadataV4 extends MetadataV0 {
         })
 
         return {
-            ...baseResponse,
             throttleTimeMs: this.decoder.readInt32(),
             brokers: this.decoder.readArray<BrokerMetadataV4>(brokersReader),
             clusterId: this.decoder.readString(),

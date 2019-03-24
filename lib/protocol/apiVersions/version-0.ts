@@ -1,4 +1,4 @@
-import { API, APIResponseBase } from '../api'
+import { API } from '../api'
 import { REQUEST_TYPE } from '../request'
 
 interface APIVersion {
@@ -7,8 +7,7 @@ interface APIVersion {
     maxVersion: number
 }
 
-
-interface APIVersionsResponse extends APIResponseBase {
+interface APIVersionsResponse {
     errorCode: number
     apiVersions: APIVersion[]
 }
@@ -42,8 +41,9 @@ export class APIVersionBase extends API {
      * @memberof APIVersionBase
      */
     decode(response: Buffer): APIVersionsResponse {
-        const baseResponse = this.decodeResponse(response)
+        this.decoder.fromBuffer(response)
         const errorCode = this.decoder.readInt16()
+
         const apiVersions = this.decoder.readArray<APIVersion>(() => (
             {
                 apiKey: this.decoder.readInt16(),
@@ -52,6 +52,6 @@ export class APIVersionBase extends API {
             }
         ))
 
-        return { ...baseResponse, errorCode, apiVersions }
+        return { errorCode, apiVersions }
     }
 }

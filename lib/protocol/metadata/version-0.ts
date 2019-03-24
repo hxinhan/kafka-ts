@@ -1,7 +1,7 @@
-import { API, APIResponseBase } from '../api'
+import { API } from '../api'
 import { REQUEST_TYPE } from '../request'
 
-export interface MetadataResponseBase extends APIResponseBase {
+export interface MetadataResponseBase {
     brokers: BrokerMetadataBase[]
     topics: TopicMetadataBase[]
 }
@@ -62,7 +62,7 @@ export class MetadataV0 extends API {
      * @memberof MetadataBase
      */
     decode(response: Buffer): MetadataResponseBase {
-        const baseResponse = this.decodeResponse(response)
+        this.decoder.fromBuffer(response)
         const brokersReader = () => (
             {
                 nodeId: this.decoder.readInt32(),
@@ -86,7 +86,6 @@ export class MetadataV0 extends API {
         })
 
         return {
-            ...baseResponse,
             brokers: this.decoder.readArray<BrokerMetadataBase>(brokersReader),
             topics: this.decoder.readArray<TopicMetadataBase>(topicsReader).filter((p) => !p.errorCode)
         }

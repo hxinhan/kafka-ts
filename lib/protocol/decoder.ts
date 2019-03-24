@@ -1,5 +1,10 @@
 import { SmartBuffer } from 'smart-buffer'
 
+export const INT8_SIZE = 1
+export const INT16_SIZE = 2
+export const INT32_SIZE = 4
+export const INT64_SIZE = 8
+
 export class Decoder {
     private smartBuffer: SmartBuffer
 
@@ -49,5 +54,4 @@ export class Decoder {
 
         return array
     }
-
 }

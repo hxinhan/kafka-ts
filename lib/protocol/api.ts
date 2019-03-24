@@ -64,9 +64,9 @@ export abstract class API {
      *
      * @abstract
      * @param {Buffer} response
-     * @returns {ApiResponse}
+     * @returns {object}
      * @memberof API
      */
-    abstract decode(response: Buffer): APIResponseBase
+    abstract decode(response: Buffer): object
 
 }
