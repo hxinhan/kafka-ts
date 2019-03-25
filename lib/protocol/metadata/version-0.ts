@@ -1,7 +1,11 @@
 import { API } from '../api'
 import { REQUEST_TYPE } from '../request'
 
-export interface MetadataResponseBase {
+export interface MetadataRequest {
+    topics: string[]
+}
+
+export interface MetadataResponseV0 {
     brokers: BrokerMetadataBase[]
     topics: TopicMetadataBase[]
 }
@@ -26,7 +30,7 @@ export interface PartitionMetadata {
     isr: number[]
 }
 
-export class MetadataV0 extends API {
+export class MetadataV0 extends API<MetadataRequest, MetadataResponseV0> {
     protected apiVersion: number
 
     constructor() {
@@ -34,7 +38,8 @@ export class MetadataV0 extends API {
         this.apiVersion = 0
     }
 
-    protected encodeBase(clientId: string, correlationId: number, params: { topics: string[] }) {
+    // protected encodeBase(clientId: string, correlationId: number, params: { topics: string[] }) {
+    protected encodeBase(clientId: string, correlationId: number, params: MetadataRequest) {
         return this.encodeRequestHeader(clientId, correlationId, REQUEST_TYPE.metadata, this.apiVersion)
             .writeArray<string>(params.topics, (topic: string) =>
                 this.encoder.writeInt16(topic.length)
@@ -61,7 +66,7 @@ export class MetadataV0 extends API {
      * @returns {MetadataResponse}
      * @memberof MetadataBase
      */
-    decode(response: Buffer): MetadataResponseBase {
+    decode(response: Buffer): MetadataResponseV0 {
         this.decoder.fromBuffer(response)
         const brokersReader = () => (
             {

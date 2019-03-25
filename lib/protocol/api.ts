@@ -7,7 +7,7 @@ export interface APIResponseBase {
     correlationId: number
 }
 
-export abstract class API {
+export abstract class API<P, T> {
 
     protected abstract apiVersion: number
     protected readonly encoder: Encoder
@@ -57,16 +57,16 @@ export abstract class API {
      * @returns {Buffer}
      * @memberof API
      */
-    abstract encode(clientId: string, correlationId: number, params?: object): Buffer
+    abstract encode(clientId: string, correlationId: number, params?: P): Buffer
 
     /**
      * Decode buffer to JSON format
      *
      * @abstract
      * @param {Buffer} response
-     * @returns {object}
+     * @returns {T}
      * @memberof API
      */
-    abstract decode(response: Buffer): object
+    abstract decode(response: Buffer): T
 
 }

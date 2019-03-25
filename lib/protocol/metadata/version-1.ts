@@ -1,6 +1,6 @@
-import { BrokerMetadataBase, TopicMetadataBase, MetadataV0, PartitionMetadata, MetadataResponseBase } from './version-0'
+import { BrokerMetadataBase, TopicMetadataBase, MetadataV0, PartitionMetadata, MetadataResponseV0 } from './version-0'
 
-export interface MetadataResponseV1 extends MetadataResponseBase {
+export interface MetadataResponseV1 extends MetadataResponseV0 {
     controllerId: number
     brokers: BrokerMetadataV1[]
     topics: TopicMetadataV1[]

@@ -12,7 +12,7 @@ interface APIVersionsResponse {
     apiVersions: APIVersion[]
 }
 
-export class APIVersionBase extends API {
+export class APIVersionBase extends API<{}, APIVersionsResponse> {
     protected apiVersion: number
 
     constructor() {
