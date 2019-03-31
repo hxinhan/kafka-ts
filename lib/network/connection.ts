@@ -1,5 +1,6 @@
 import * as net from 'net'
 import { Subject } from 'rxjs'
+import { logger } from '../utils'
 
 export class Connection {
 
@@ -10,7 +11,7 @@ export class Connection {
     constructor(
         private readonly host: string,
         private readonly port: number,
-        private readonly connectionTimout = 5000,
+        private readonly connectionTimout = 5 * 1000,
         private readonly keepAlievTimeout = 60 * 1000) {
         this.socket = new net.Socket()
         this.socket.setTimeout(this.connectionTimout)
@@ -18,21 +19,23 @@ export class Connection {
     }
 
     async connect() {
-        console.log(`connecting to ${this.host}:${this.port}`)
+        logger.debug(`Connecting to ${this.host}:${this.port}`)
         return new Promise((resolve, reject) => {
             this.socket.connect(this.port, this.host)
 
             this.socket.on('connect', () => {
-                console.log('connected.')
+                logger.debug('Connected.')
                 this.connected = true
                 resolve()
             })
             this.socket.on('data', (data: Buffer) => this.processData(data))
             this.socket.on('error', (err) => {
+                logger.error('Socket on error', err)
                 this.disconnect()
                 reject(err)
             })
             this.socket.on('timeout', () => {
+                logger.error('Socket on timeout')
                 this.disconnect()
                 reject(new Error('Connection timeout'))
             })
@@ -44,8 +47,9 @@ export class Connection {
     }
 
     async disconnect() {
-        console.log(`disconnecting from ${this.host}:${this.port}`)
+        logger.debug(`Disconnecting from ${this.host}:${this.port}`)
         this.socket.end()
+        this.socket.destroy()
         this.socket.unref()
         this.connected = false
     }

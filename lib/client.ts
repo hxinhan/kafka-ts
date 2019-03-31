@@ -4,6 +4,7 @@ import { metadataAPI } from './protocol/metadata'
 import { apiVersionsAPI } from './protocol/apiVersions'
 import { INT32_SIZE } from './protocol/decoder'
 import { Connection } from './network/connection'
+import { logger } from './utils'
 
 const clientName = 'test'
 const host = '127.0.0.1'
@@ -39,7 +40,7 @@ function onData(data: Buffer) {
     if (handler) {
         const remainingBytes = sb.toBuffer().slice(INT32_SIZE * 2, messageSize + INT32_SIZE * 2)
         const decodedData = handler.decode(remainingBytes)
-        console.log('decodedData: ', JSON.stringify(decodedData, null, 2))
+        logger.debug('DecodedData: ', JSON.stringify(decodedData, null, 2))
     }
 }
 
