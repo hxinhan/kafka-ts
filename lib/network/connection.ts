@@ -11,10 +11,10 @@ export class Connection {
     constructor(
         private readonly host: string,
         private readonly port: number,
-        private readonly connectionTimout = 5 * 1000,
+        private readonly socketTimout = 2 * 60 * 1000,
         private readonly keepAlievTimeout = 60 * 1000) {
         this.socket = new net.Socket()
-        this.socket.setTimeout(this.connectionTimout)
+        this.socket.setTimeout(this.socketTimout)
         this.socket.setKeepAlive(true, this.keepAlievTimeout)
     }
 
@@ -37,7 +37,7 @@ export class Connection {
             this.socket.on('timeout', () => {
                 logger.error('Socket on timeout')
                 this.disconnect()
-                reject(new Error('Connection timeout'))
+                reject(new Error('Socket timeout'))
             })
         })
     }
@@ -49,7 +49,6 @@ export class Connection {
     async disconnect() {
         logger.debug(`Disconnecting from ${this.host}:${this.port}`)
         this.socket.end()
-        this.socket.destroy()
         this.socket.unref()
         this.connected = false
     }

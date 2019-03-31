@@ -38,7 +38,6 @@ export class MetadataV0 extends API<MetadataRequest, MetadataResponseV0> {
         this.apiVersion = 0
     }
 
-    // protected encodeBase(clientId: string, correlationId: number, params: { topics: string[] }) {
     protected encodeBase(clientId: string, correlationId: number, params: MetadataRequest) {
         return this.encodeRequestHeader(clientId, correlationId, REQUEST_TYPE.metadata, this.apiVersion)
             .writeArray<string>(params.topics, (topic: string) =>
