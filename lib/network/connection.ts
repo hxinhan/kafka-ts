@@ -42,6 +42,14 @@ export class Connection {
         })
     }
 
+    pause() {
+        this.socket.pause()
+    }
+
+    resume() {
+        this.socket.resume()
+    }
+
     send(data: Buffer) {
         this.socket.write(data)
     }
