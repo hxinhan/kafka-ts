@@ -4,7 +4,7 @@ import { metadataAPI } from './protocol/metadata'
 import { apiVersionsAPI } from './protocol/apiVersions'
 import { INT32_SIZE } from './protocol/decoder'
 import { Connection } from './network/connection'
-import { logger } from './utils'
+import { logger } from './logger'
 
 const clientName = 'test'
 const host = '127.0.0.1'

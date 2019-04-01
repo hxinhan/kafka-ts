@@ -1,3 +1,5 @@
+// tslint:disable:no-console
+
 export const logger = {
     info(msg: string, obj?: any) {
         if (obj) {

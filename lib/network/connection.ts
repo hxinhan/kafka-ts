@@ -1,6 +1,6 @@
 import * as net from 'net'
 import { Subject } from 'rxjs'
-import { logger } from '../utils'
+import { logger } from '../logger'
 
 export class Connection {
 
