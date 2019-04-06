@@ -1,4 +1,16 @@
+import { KafkaBroker } from './cluster/broker'
 
+const host = '127.0.0.1'
+const port = 9092
+
+const broker = new KafkaBroker(host, port)
+
+async function test() {
+    await broker.connect()
+    await broker.apiVersions()
+}
+
+/*
 import { SmartBuffer } from 'smart-buffer'
 import { metadataAPI } from './protocol/metadata'
 import { apiVersionsAPI } from './protocol/apiVersions'
@@ -6,9 +18,6 @@ import { INT32_SIZE } from './protocol/decoder'
 import { Connection } from './network/connection'
 import { logger } from './logger'
 
-const clientId = 'test'
-const host = '127.0.0.1'
-const port = 9092
 const connection = new Connection(host, port)
 const outstandingRequests = new Map()
 
@@ -43,5 +52,5 @@ function onData(data: Buffer) {
         logger.debug('DecodedData: ', JSON.stringify(decodedData, null, 2))
     }
 }
-
+*/
 test()
