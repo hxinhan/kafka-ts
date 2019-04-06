@@ -1,6 +1,6 @@
 import { APIVersionBase } from './version-0'
 
-export const apiVersionsAPI = {
+const api = {
     0: () => {
         const apiVersionV0 = new APIVersionBase()
         return {
@@ -8,4 +8,9 @@ export const apiVersionsAPI = {
             decode: (response: Buffer) => apiVersionV0.decode(response)
         }
     }
+}
+
+export const apiVersionsAPI = {
+    versions: Object.keys(api).map((v) => parseInt(v)),
+    version: api
 }

@@ -4,7 +4,7 @@ import { MetadataV2 } from './version-2'
 import { MetadataV3 } from './version-3'
 import { MetadataV4 } from './version-4'
 
-export const metadataAPI = {
+const api = {
     0: () => {
         const metadataV0 = new MetadataV0()
         return {
@@ -50,4 +50,9 @@ export const metadataAPI = {
             decode: (response: Buffer) => metadataV4.decode(response)
         }
     }
+}
+
+export const metadataAPI = {
+    versions: Object.keys(api).map((v) => parseInt(v)),
+    version: api
 }

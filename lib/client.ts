@@ -6,14 +6,14 @@ import { INT32_SIZE } from './protocol/decoder'
 import { Connection } from './network/connection'
 import { logger } from './logger'
 
-const clientName = 'test'
+const clientId = 'test'
 const host = '127.0.0.1'
 const port = 9092
 const connection = new Connection(host, port)
-const requestQueue = new Map()
+const outstandingRequests = new Map()
 
-const metadataAPIHandler = metadataAPI['0']()
-const apiVersionsAPIHandler = apiVersionsAPI['0']()
+const metadataAPIHandler = metadataAPI.version[4]()
+const apiVersionsAPIHandler = apiVersionsAPI.version[0]()
 
 async function test() {
     await connection.connect()
@@ -21,14 +21,14 @@ async function test() {
     connection.data$().subscribe((data) => onData(data))
 
     let correlationId = 1
-    let request = apiVersionsAPIHandler.encode(clientName, correlationId)
-    requestQueue.set(correlationId, apiVersionsAPIHandler)
-    connection.send(request)
+    let requestPayload = apiVersionsAPIHandler.encode(clientId, correlationId)
+    outstandingRequests.set(correlationId, apiVersionsAPIHandler)
+    connection.send(requestPayload)
 
     correlationId++
-    request = metadataAPIHandler.encode(clientName, correlationId, [])
-    requestQueue.set(correlationId, metadataAPIHandler)
-    connection.send(request)
+    requestPayload = metadataAPIHandler.encode(clientId, correlationId, [])
+    outstandingRequests.set(correlationId, metadataAPIHandler)
+    connection.send(requestPayload)
 }
 
 function onData(data: Buffer) {
@@ -36,7 +36,7 @@ function onData(data: Buffer) {
     const messageSize = sb.readInt32BE()
     const correlationId = sb.readInt32BE()
 
-    const handler = requestQueue.get(correlationId)
+    const handler = outstandingRequests.get(correlationId)
     if (handler) {
         const remainingBytes = sb.toBuffer().slice(INT32_SIZE * 2, messageSize + INT32_SIZE * 2)
         const decodedData = handler.decode(remainingBytes)

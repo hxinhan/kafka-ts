@@ -2,10 +2,16 @@
     "compilerOptions": {
         "module": "commonjs",
         "target": "ES2016",
-        "lib": ["es2016"],
-        "types": ["node"],
+        "lib": [
+            "es2016"
+        ],
+        "types": [
+            "node"
+        ],
         "strict": true,
         "noImplicitReturns": true,
+        "noImplicitAny": true,
+        // "suppressImplicitAnyIndexErrors": true,
         "noUnusedLocals": true,
         "noUnusedParameters": true,
         "strictNullChecks": true,
@@ -14,5 +20,9 @@
         "removeComments": true,
         "outDir": "build"
     },
-    "include": ["index.ts", "lib", "test"]
+    "include": [
+        "index.ts",
+        "lib",
+        "test"
+    ]
 }

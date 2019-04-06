@@ -17,3 +17,5 @@ export class ConnectionError extends KafkaTsError {
         this.errorCode = obj.errorCode
     }
 }
+
+export class UnspoortedAPIError extends KafkaTsError { }
