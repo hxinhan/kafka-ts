@@ -48,8 +48,8 @@ export class KafkaBroker {
         }
     }
 
-    private async sendRequest(correlationId: number, payload: Buffer, decode: (response: Buffer) => {}) {
-        return new Promise((resolve) => {
+    private async sendRequest<T>(correlationId: number, payload: Buffer, decode: (response: Buffer) => T) {
+        return new Promise<T>((resolve) => {
             this.outstandingRequests.set(correlationId, { decode, complete: resolve })
             this.connection.send(payload)
         })
