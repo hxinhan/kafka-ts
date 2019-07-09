@@ -9,6 +9,7 @@ export class KafkaBroker {
     private connection: Connection
     private clientId = 'test'
     private outstandingRequests = new Map()
+    private correlationId = 0
 
     constructor(readonly host: string, readonly port: number) {
         this.connection = new Connection(host, port)
@@ -31,13 +32,13 @@ export class KafkaBroker {
         // Find the best version implemented by the server
         for (let candidateVersion of availableVersions) {
             try {
+                this.correlationId++
                 const apiVersions = apiVersionsAPI.version[<keyof typeof apiVersionsAPI.version>candidateVersion]
+                const requestPayload = apiVersions().encode(this.clientId, this.correlationId)
 
-                const correlationId = 1
-                const requestPayload = apiVersions().encode(this.clientId, correlationId)
-
-                const response = await this.sendRequest(correlationId, requestPayload, apiVersions().decode)
+                const response = await this.sendRequest(this.correlationId, requestPayload, apiVersions().decode)
                 logger.debug('API versions response: ', response)
+
                 break
             } catch (e) {
                 if (e.type !== 'UNSUPPORTED_VERSION') {
