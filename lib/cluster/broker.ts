@@ -35,14 +35,9 @@ export class KafkaBroker {
 
                 const correlationId = 1
                 const requestPayload = apiVersions().encode(this.clientId, correlationId)
-                // this.outstandingRequests.set(correlationId, { decode: apiVersions().decode, completed: Promise })
-                // this.connection.send(requestPayload)
 
                 const response = await this.sendRequest(correlationId, requestPayload, apiVersions().decode)
                 logger.debug('API versions response: ', response)
-                logger.info('!!!!!!!!!!!!!!!!!!!!!!!! resolved')
-                // await this.sendRequest(correlationId, requestPayload)
-
                 break
             } catch (e) {
                 if (e.type !== 'UNSUPPORTED_VERSION') {
@@ -53,24 +48,11 @@ export class KafkaBroker {
     }
 
     private async sendRequest(correlationId: number, payload: Buffer, decode: (response: Buffer) => {}) {
-        // this.outstandingRequests.set(correlationId)
         return new Promise((resolve) => {
-            this.outstandingRequests.set(correlationId, { decode, completed: resolve })
+            this.outstandingRequests.set(correlationId, { decode, complete: resolve })
             this.connection.send(payload)
         })
-        /*
-        const completed = Promise
-        this.outstandingRequests.set(correlationId, { decode, completed })
-        this.connection.send(payload)
-        return completed
-        */
     }
-    /*
-    private async sendRequest(correlationId: number, payload: Buffer) {
-        // this.outstandingRequests.set(correlationId)
-        this.connection.send(payload)
-    }
-    */
 
     private onData(data: Buffer) {
         const sb = SmartBuffer.fromBuffer(data)
@@ -81,8 +63,7 @@ export class KafkaBroker {
         if (handler) {
             const remainingBytes = sb.toBuffer().slice(INT32_SIZE * 2, messageSize + INT32_SIZE * 2)
             const decodedData = handler.decode(remainingBytes)
-            // logger.debug('DecodedData2: ', JSON.stringify(decodedData, null, 2))
-            handler.completed(decodedData)
+            handler.complete(decodedData)
         }
     }
 

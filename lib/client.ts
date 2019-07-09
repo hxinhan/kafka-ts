@@ -10,6 +10,8 @@ async function test() {
     await broker.apiVersions()
 }
 
+test()
+
 /*
 import { SmartBuffer } from 'smart-buffer'
 import { metadataAPI } from './protocol/metadata'
@@ -53,4 +55,3 @@ function onData(data: Buffer) {
     }
 }
 */
-test()
