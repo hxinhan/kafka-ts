@@ -36,30 +36,29 @@ export class KafkaBroker {
         for (let candidateVersion of availableVersions) {
             try {
                 this.correlationId++
-                const apiVersions = apiVersionsAPI.api[<keyof typeof apiVersionsAPI.api>candidateVersion]
-                const requestPayload = apiVersions().encode(this.clientId, this.correlationId)
+                const api = apiVersionsAPI.api[<keyof typeof apiVersionsAPI.api>candidateVersion]()
+                const payload = api.encode(this.clientId, this.correlationId)
 
-                const response = await this.sendRequest(this.correlationId, requestPayload, apiVersions().decode)
+                const response = await this.sendRequest(this.correlationId, payload, api.decode)
                 logger.debug('API versions response: ', response)
 
                 for (const apiKey of Object.keys(REQUEST_TYPE).filter((type) => type === 'metadata')) {
-                    const api = response.apiVersions.find(
-                        (apiVersion) => REQUEST_TYPE[<keyof typeof REQUEST_TYPE>apiKey] === apiVersion.apiKey)
-                    if (api) {
-                        if (metadataAPI.version > api.maxVersion) {
-                            const version = metadataAPI.versions.find((v) => v >= api.maxVersion)
+                    const apiVersion = response.apiVersions.find(
+                        (version) => REQUEST_TYPE[<keyof typeof REQUEST_TYPE>apiKey] === version.apiKey)
+                    if (apiVersion) {
+                        if (metadataAPI.version > apiVersion.maxVersion) {
+                            const version = metadataAPI.versions.find((v) => v >= apiVersion.maxVersion)
                             if (version) {
                                 metadataAPI.version = version
                             } else {
                                 logger.error(`Broker does not have supported version for API key ${apiKey}`)
                             }
-                        } else if (metadataAPI.version < api.minVersion) {
+                        } else if (metadataAPI.version < apiVersion.minVersion) {
                             logger.error(`Client does not have supported version for API key ${apiKey}`)
                         }
                     } else {
                         logger.error(`Client does not support API key ${apiKey}`)
                     }
-                    logger.debug('metadata API version: ', metadataAPI.api[<keyof typeof metadataAPI.api>metadataAPI.version])
                 }
                 break
             } catch (e) {
@@ -68,6 +67,16 @@ export class KafkaBroker {
                 }
             }
         }
+    }
+
+    async metadata() {
+        this.correlationId++
+        const api = metadataAPI
+            .api[<keyof typeof metadataAPI.api>metadataAPI.version]()
+        const payload = api.encode(this.clientId, this.correlationId, [])
+
+        const response = await this.sendRequest(this.correlationId, payload, api.decode)
+        logger.debug('metadata response: ', response)
     }
 
     private async sendRequest<T>(correlationId: number, payload: Buffer, decode: (response: Buffer) => T) {

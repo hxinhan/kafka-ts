@@ -8,6 +8,7 @@ const broker = new KafkaBroker(host, port)
 async function test() {
     await broker.connect()
     await broker.apiVersions()
+    await broker.metadata()
 }
 
 test()
