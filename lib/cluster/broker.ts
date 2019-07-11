@@ -1,8 +1,11 @@
 import { Connection } from '../network/connection'
 import { apiVersionsAPI } from '../protocol/apiVersions'
-import { SmartBuffer } from 'smart-buffer';
+import { SmartBuffer } from 'smart-buffer'
 import { INT32_SIZE } from '../protocol/decoder'
 import { logger } from '../logger'
+import { REQUEST_TYPE } from '../protocol/request'
+import { metadataAPI } from '../protocol/metadata'
+
 
 export class KafkaBroker {
 
@@ -33,12 +36,31 @@ export class KafkaBroker {
         for (let candidateVersion of availableVersions) {
             try {
                 this.correlationId++
-                const apiVersions = apiVersionsAPI.version[<keyof typeof apiVersionsAPI.version>candidateVersion]
+                const apiVersions = apiVersionsAPI.api[<keyof typeof apiVersionsAPI.api>candidateVersion]
                 const requestPayload = apiVersions().encode(this.clientId, this.correlationId)
 
                 const response = await this.sendRequest(this.correlationId, requestPayload, apiVersions().decode)
                 logger.debug('API versions response: ', response)
 
+                for (const apiKey of Object.keys(REQUEST_TYPE).filter((type) => type === 'metadata')) {
+                    const api = response.apiVersions.find(
+                        (apiVersion) => REQUEST_TYPE[<keyof typeof REQUEST_TYPE>apiKey] === apiVersion.apiKey)
+                    if (api) {
+                        if (metadataAPI.version > api.maxVersion) {
+                            const version = metadataAPI.versions.find((v) => v >= api.maxVersion)
+                            if (version) {
+                                metadataAPI.version = version
+                            } else {
+                                logger.error(`Broker does not have supported version for API key ${apiKey}`)
+                            }
+                        } else if (metadataAPI.version < api.minVersion) {
+                            logger.error(`Client does not have supported version for API key ${apiKey}`)
+                        }
+                    } else {
+                        logger.error(`Client does not support API key ${apiKey}`)
+                    }
+                    logger.debug('metadata API version: ', metadataAPI.api[<keyof typeof metadataAPI.api>metadataAPI.version])
+                }
                 break
             } catch (e) {
                 if (e.type !== 'UNSUPPORTED_VERSION') {

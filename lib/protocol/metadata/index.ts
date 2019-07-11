@@ -54,5 +54,6 @@ const api = {
 
 export const metadataAPI = {
     versions: Object.keys(api).map((v) => parseInt(v)),
-    version: api
+    version: 4,
+    api
 }

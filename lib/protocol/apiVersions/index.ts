@@ -12,5 +12,6 @@ const api = {
 
 export const apiVersionsAPI = {
     versions: Object.keys(api).map((v) => parseInt(v)),
-    version: api
+    version: 0,
+    api
 }
